@@ -29,6 +29,8 @@ Using the compiled Linux musl amd64 binary:
 ```bash
 PORT=20081 \
 WORKSPACE_MANAGER_DATA_DIR=./data \
+WORKSPACE_SHARED_DATA=global \
+WORKSPACE_SHARED_FILES=/root/models.json \
 GITEA_OAUTH_CLIENT_ID=your_client_id \
 GITEA_OAUTH_CLIENT_SECRET=your_client_secret \
 WORKSPACE_IMAGE=gitea-code-server:latest \
