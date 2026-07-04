@@ -1,0 +1,56 @@
+{
+	"name": "chat-language-model-loader",
+	"displayName": "Chat Language Model Loader",
+	"description": "Register OpenAI-compatible models from /root/models.json using the VS Code language model provider API.",
+	"version": "0.1.4",
+	"publisher": "local",
+	"engines": {
+		"vscode": "^1.85.0"
+	},
+	"extensionKind": [
+		"workspace"
+	],
+	"categories": [
+		"AI",
+		"Chat"
+	],
+	"enabledApiProposals": [
+		"chatProvider"
+	],
+	"activationEvents": [
+		"onStartupFinished",
+		"onCommand:chatLanguageModelLoader.reloadModels"
+	],
+	"main": "./extension.js",
+	"contributes": {
+		"languageModelChatProviders": [
+			{
+				"vendor": "local-oai",
+				"displayName": "Local OAI Models",
+				"managementCommand": "chatLanguageModelLoader.reloadModels"
+			}
+		],
+		"commands": [
+			{
+				"command": "chatLanguageModelLoader.reloadModels",
+				"title": "Load Local OAI Models From File",
+				"category": "Chat Model Loader"
+			}
+		],
+		"configuration": {
+			"title": "Chat Language Model Loader",
+			"properties": {
+				"chatLanguageModelLoader.loadOnStartup": {
+					"type": "boolean",
+					"default": true,
+					"description": "When no persisted models exist, load /root/models.json on extension startup."
+				},
+				"chatLanguageModelLoader.sourceModelsPath": {
+					"type": "string",
+					"default": "/root/models.json",
+					"description": "Absolute path to the source model JSON file."
+				}
+			}
+		}
+	}
+}

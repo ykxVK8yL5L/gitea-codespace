@@ -1,0 +1,76 @@
+.gcs-wrapper {
+  padding: 10px 12px;
+  min-width: 260px;
+}
+
+.gcs-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.gcs-tab {
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  padding: 6px 8px;
+  font: inherit;
+}
+
+.gcs-tab.active {
+  border-bottom-color: var(--color-primary);
+  font-weight: 600;
+}
+
+.gcs-space-panel {
+  min-width: 260px;
+}
+
+
+.gcs-space-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.gcs-space-title {
+  font-weight: 600;
+}
+
+.gcs-space-list {
+  display: grid;
+  gap: 8px;
+}
+
+.gcs-space-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.gcs-space-name {
+  max-width: 210px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.gcs-space-meta {
+  color: var(--color-text-light-2);
+  font-size: 12px;
+}
+
+.gcs-space-item-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.gcs-empty {
+  color: var(--color-text-light-2);
+  font-size: 13px;
+}
