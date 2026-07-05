@@ -1,10 +1,6 @@
-FROM codercom/code-server:latest AS github-authentication-builder
+FROM node:24-bookworm-slim AS github-authentication-builder
 
 USER root
-
-ARG NODE_VERSION=24
-ENV FNM_DIR=/opt/fnm/node
-ENV PATH=/opt/fnm:$PATH
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -16,19 +12,8 @@ RUN apt-get update \
       patch \
     && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p "$FNM_DIR" \
-    && curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir /opt/fnm \
-    && ln -sf /opt/fnm/fnm /usr/local/bin/fnm \
-    && fnm install ${NODE_VERSION} \
-    && fnm default ${NODE_VERSION} \
-    && NODE_BIN_DIR="$(dirname "$(fnm exec --using ${NODE_VERSION} command -v node)")" \
-    && ln -sf "$NODE_BIN_DIR/node" /usr/local/bin/node \
-    && ln -sf "$NODE_BIN_DIR/npm" /usr/local/bin/npm \
-    && ln -sf "$NODE_BIN_DIR/npx" /usr/local/bin/npx \
-    && chmod -R a+rX /opt/fnm
-
 COPY github-authentication /tmp/github-authentication
-RUN if eval "$(fnm env --shell bash)" && /tmp/github-authentication/build.sh; then \
+RUN if /tmp/github-authentication/build.sh; then \
       :; \
     else \
       echo 'warning: failed to build env-token GitHub Authentication; official mode remains available' >&2 \
@@ -56,8 +41,11 @@ RUN apt-get update \
       unzip \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=github-authentication-builder /opt/fnm /opt/fnm
-RUN ln -sf /opt/fnm/fnm /usr/local/bin/fnm \
+RUN mkdir -p "$FNM_DIR" \
+    && curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir /opt/fnm \
+    && ln -sf /opt/fnm/fnm /usr/local/bin/fnm \
+    && fnm install ${NODE_VERSION} \
+    && fnm default ${NODE_VERSION} \
     && NODE_BIN_DIR="$(dirname "$(fnm exec --using ${NODE_VERSION} command -v node)")" \
     && ln -sf "$NODE_BIN_DIR/node" /usr/local/bin/node \
     && ln -sf "$NODE_BIN_DIR/npm" /usr/local/bin/npm \
