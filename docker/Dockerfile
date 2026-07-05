@@ -46,10 +46,11 @@ RUN mkdir -p "$FNM_DIR" \
     && ln -sf /opt/fnm/fnm /usr/local/bin/fnm \
     && fnm install ${NODE_VERSION} \
     && fnm default ${NODE_VERSION} \
-    && NODE_BIN_DIR="$(dirname "$(fnm exec --using ${NODE_VERSION} command -v node)")" \
+    && NODE_BIN_DIR="$(dirname "$(fnm exec --using ${NODE_VERSION} node -p 'process.execPath')")" \
     && ln -sf "$NODE_BIN_DIR/node" /usr/local/bin/node \
     && ln -sf "$NODE_BIN_DIR/npm" /usr/local/bin/npm \
     && ln -sf "$NODE_BIN_DIR/npx" /usr/local/bin/npx \
+    && printf 'export FNM_DIR=/opt/fnm/node\nexport PATH=/opt/fnm:$PATH\ncase "$-" in *i*) eval "$(fnm env --shell bash)" ;; esac\n' > /etc/profile.d/fnm.sh \
     && chmod -R a+rX /opt/fnm
 
 RUN usermod -aG sudo coder \
