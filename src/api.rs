@@ -392,6 +392,16 @@ async fn start_workspace_container(
             args.push(format!("PASSWORD={password}"));
         }
 
+        if let Some(mode) = state.config.workspace.github_authentication_mode.as_deref() {
+            args.push("-e".to_string());
+            args.push(format!("GITHUB_AUTHENTICATION_MODE={mode}"));
+        }
+
+        if let Some(token) = state.config.workspace.github_token.as_deref() {
+            args.push("-e".to_string());
+            args.push(format!("GITHUB_TOKEN={token}"));
+        }
+
         add_shared_code_server_mounts(
             &mut args,
             &state.config.data_dir,

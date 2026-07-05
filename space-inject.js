@@ -357,6 +357,9 @@
   }
 
   async function deleteWorkspace(panel, workspaceId) {
+    const confirmed = window.confirm(`Delete code space ${workspaceId}?`);
+    if (!confirmed) return;
+
     renderSpacesPanel(panel, "loading");
 
     try {

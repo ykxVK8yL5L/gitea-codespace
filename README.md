@@ -29,8 +29,6 @@ Using the compiled Linux musl amd64 binary:
 ```bash
 PORT=20081 \
 WORKSPACE_MANAGER_DATA_DIR=./data \
-WORKSPACE_SHARED_DATA=global \
-WORKSPACE_SHARED_FILES=/root/models.json \
 GITEA_OAUTH_CLIENT_ID=your_client_id \
 GITEA_OAUTH_CLIENT_SECRET=your_client_secret \
 WORKSPACE_IMAGE=gitea-code-server:latest \
@@ -81,6 +79,19 @@ WORKSPACE_CODE_SERVER_PASSWORD=your_password
 ```
 
 If neither `CODE_SERVER_AUTH=none` nor `WORKSPACE_CODE_SERVER_PASSWORD` is set, the manager generates a random password per workspace and returns it in the workspace list.
+
+Optional GitHub Authentication mode for workspace containers:
+
+```bash
+# Default: use the official code-server GitHub Authentication extension.
+WORKSPACE_GITHUB_AUTHENTICATION_MODE=official
+
+# Use the modified GitHub Authentication extension that can create sessions from GITHUB_TOKEN.
+WORKSPACE_GITHUB_AUTHENTICATION_MODE=env-token
+WORKSPACE_GITHUB_TOKEN=ghp_xxx
+```
+
+`WORKSPACE_GITHUB_TOKEN` is passed into workspace containers as `GITHUB_TOKEN` only when configured. The modified authentication extension is additive and only activates token-based silent sessions when `GITHUB_AUTHENTICATION_MODE=env-token`; otherwise the official behavior is preserved.
 
 Optional shared code-server user data strategy:
 
