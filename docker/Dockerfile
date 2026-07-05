@@ -13,12 +13,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY github-authentication /tmp/github-authentication
-RUN if /tmp/github-authentication/build.sh; then \
-      :; \
-    else \
-      echo 'warning: failed to build env-token GitHub Authentication; official mode remains available' >&2 \
-      && mkdir -p /tmp/github-authentication/dist/github-authentication-env-token; \
-    fi
+RUN bash /tmp/github-authentication/update-upstream.sh \
+    && bash /tmp/github-authentication/build.sh
 
 FROM codercom/code-server:latest
 
