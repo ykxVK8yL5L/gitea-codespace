@@ -5,7 +5,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 UPSTREAM_DIR="$SCRIPT_DIR/upstream"
 BUILD_DIR="$SCRIPT_DIR/build"
 DIST_DIR="$SCRIPT_DIR/dist/github-authentication-env-token"
-PATCH_DIR="$SCRIPT_DIR/patches"
 
 require_command() {
   if ! command -v "$1" >/dev/null 2>&1; then
@@ -19,20 +18,13 @@ require_command npm
 require_command python3
 
 if [ ! -f "$UPSTREAM_DIR/package.json" ]; then
-  echo "upstream source is missing. Run docker/github-authentication/update-upstream.sh first." >&2
+  echo "vendored upstream source is missing: $UPSTREAM_DIR" >&2
   exit 1
 fi
 
 rm -rf "$BUILD_DIR" "$DIST_DIR"
 mkdir -p "$BUILD_DIR" "$DIST_DIR"
 cp -a "$UPSTREAM_DIR/." "$BUILD_DIR/"
-
-if compgen -G "$PATCH_DIR/*.patch" >/dev/null; then
-  for patch in "$PATCH_DIR"/*.patch; do
-    echo "Applying $(basename "$patch")"
-    patch -d "$BUILD_DIR" -p1 < "$patch"
-  done
-fi
 
 npm --prefix "$BUILD_DIR" install --omit=dev
 npm --prefix "$BUILD_DIR" install --no-save esbuild

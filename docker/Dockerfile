@@ -9,14 +9,12 @@ RUN apt-get update \
       curl \
       git \
       python3 \
-      patch \
     && rm -rf /var/lib/apt/lists/*
 
 COPY github-authentication /tmp/github-authentication
-RUN bash /tmp/github-authentication/update-upstream.sh \
-    && bash /tmp/github-authentication/build.sh
+RUN bash /tmp/github-authentication/build.sh
 
-FROM codercom/code-server:latest
+FROM codercom/code-server:4.127.0-trixie
 
 USER root
 

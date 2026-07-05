@@ -35,7 +35,7 @@ jobs:
           context: ./docker
           push: true
           tags: |
-            ghcr.io/${{ steps.lower-repo.outputs.repository }}/gitea-code-server:latest
+            ghcr.io/${{ steps.lower-repo.outputs.repository }}/gitea-code-server:4.127.0-trixie
           labels: |
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
             org.opencontainers.image.description=Gitea-Code-Server Docker Image
