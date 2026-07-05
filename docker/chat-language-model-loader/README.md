@@ -32,6 +32,7 @@ Example:
 		"url": "https://abc.com/api/v1",
 		"apikey": "sk-xxx",
 		"model": "glm-5.2",
+		"alias": "GLM 5.2",
 		"type": "completions"
 	}
 ]
@@ -42,6 +43,7 @@ Fields:
 - `url`: Base URL for the OpenAI-compatible API. The extension calls `${url}/chat/completions` for `type: "completions"`.
 - `apikey`: API key. It is imported into VS Code SecretStorage when models are loaded.
 - `model`: Upstream model ID sent in the request body.
+- `alias` optional: Display name shown in the model picker. Requests still use `model`.
 - `type`: Currently `completions` is implemented. `responses` is accepted in the file but intentionally returns a not-implemented error in this minimal version.
 - `maxInputTokens` optional, defaults to `128000`.
 - `maxOutputTokens` optional, defaults to `16000`.
@@ -51,10 +53,10 @@ Fields:
 The extension deduplicates models by this fingerprint:
 
 ```text
-type + normalized url + apikey + model
+type + normalized url + apikey + model + alias
 ```
 
-`url` is normalized by removing trailing slashes. If all four values match, only one model is loaded. The generated model ID is stable, for example:
+`url` is normalized by removing trailing slashes. If all values match, only one model is loaded. The generated model ID is stable, for example:
 
 ```text
 local-oai-8f3a21c9

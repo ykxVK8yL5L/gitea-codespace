@@ -50,9 +50,9 @@ class LocalOaiProvider {
 	async provideLanguageModelChatInformation(_options, _token) {
 		return loadedModels.map((model) => ({
 			id: model.id,
-			name: model.model,
+			name: model.alias || model.model,
 			detail: "local-oai",
-			tooltip: `${model.type} ${model.url}`,
+			tooltip: `${model.model} · ${model.type} ${model.url}`,
 			family: "oai-compatible",
 			version: "1.0.0",
 			maxInputTokens: model.maxInputTokens ?? 128000,
@@ -179,13 +179,15 @@ function normalizeSourceModel(input, index) {
 		throw new Error(`Model at index ${index} has unsupported type '${type}'. Use completions or responses.`);
 	}
 	const normalizedUrl = normalizeUrl(url);
-	const fingerprint = `${type}:${normalizedUrl}:${apikey}:${model}`;
+	const alias = optionalString(input.alias);
+	const fingerprint = `${type}:${normalizedUrl}:${apikey}:${model}:${alias || ""}`;
 	return {
 		id: `local-oai-${hashString(fingerprint)}`,
 		fingerprint,
 		url: normalizedUrl,
 		apikey,
 		model,
+		alias,
 		type,
 		maxInputTokens: numberOrDefault(input.maxInputTokens, 128000),
 		maxOutputTokens: numberOrDefault(input.maxOutputTokens, 16000),
@@ -225,6 +227,10 @@ function readRequiredString(input, key, index) {
 
 function numberOrDefault(value, fallback) {
 	return typeof value === "number" && Number.isFinite(value) ? value : fallback;
+}
+
+function optionalString(value) {
+	return typeof value === "string" && value.trim() !== "" ? value.trim() : undefined;
 }
 
 function secretKeyFor(model) {
