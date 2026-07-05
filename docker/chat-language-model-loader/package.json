@@ -2,7 +2,7 @@
 	"name": "chat-language-model-loader",
 	"displayName": "Chat Language Model Loader",
 	"description": "Register OpenAI-compatible models from /root/models.json using the VS Code language model provider API.",
-	"version": "0.1.4",
+	"version": "0.1.7",
 	"publisher": "local",
 	"engines": {
 		"vscode": "^1.85.0"
