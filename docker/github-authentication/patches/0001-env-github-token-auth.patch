@@ -69,20 +69,8 @@ diff -ruN gh-auth-orig/src/extension.ts gh-auth-mod/src/extension.ts
 +			return;
 +		}
 +
-+		const scopesInput = await vscode.window.showInputBox({
-+			title: vscode.l10n.t('GitHub: Sign In with PAT'),
-+			prompt: vscode.l10n.t('Enter the authentication scopes for this session.'),
-+			value: 'user:email',
-+			ignoreFocusOut: true
-+		});
-+
-+		if (scopesInput === undefined) {
-+			return;
-+		}
-+
-+		const scopes = scopesInput.split(/[\s,]+/).map(scope => scope.trim()).filter(Boolean);
 +		try {
-+			const session = await githubAuthProvider.createSessionWithPAT(token.trim(), scopes);
++			const session = await githubAuthProvider.createSessionWithPAT(token.trim(), ['user:email']);
 +			vscode.window.showInformationMessage(vscode.l10n.t('Signed in to GitHub with PAT as {0}.', session.account.label));
 +		} catch (e) {
 +			vscode.window.showErrorMessage(vscode.l10n.t('GitHub PAT sign in failed: {0}', `${e}`));
