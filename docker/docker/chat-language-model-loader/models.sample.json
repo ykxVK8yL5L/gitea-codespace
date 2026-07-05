@@ -1,9 +1,0 @@
-[
-	{
-		"url": "https://abc.com/v1",
-		"apikey": "sk_xxxxxx",
-		"model": "glm-5.2",
-		"alias": "GLM 5.2",
-		"type": "completions"
-	}
-]
