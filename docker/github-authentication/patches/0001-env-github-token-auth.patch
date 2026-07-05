@@ -34,7 +34,7 @@ diff -ruN gh-auth-orig/package.json gh-auth-mod/package.json
 diff -ruN gh-auth-orig/src/extension.ts gh-auth-mod/src/extension.ts
 --- gh-auth-orig/src/extension.ts	2026-07-05 14:52:43.003615698 +0000
 +++ gh-auth-mod/src/extension.ts	2026-07-05 15:04:00.682443065 +0000
-@@ -65,7 +65,65 @@
+@@ -65,7 +65,62 @@
  	context.subscriptions.push(uriHandler);
  	context.subscriptions.push(vscode.window.registerUriHandler(uriHandler));
  
