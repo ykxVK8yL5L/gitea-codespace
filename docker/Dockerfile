@@ -36,7 +36,6 @@ USER coder
 RUN code-server --install-extension vscode-icons-team.vscode-icons \
     && code-server --install-extension ms-python.python \
     && code-server --install-extension ms-python.black-formatter \
-    && code-server --install-extension Continue.continue \
     && code-server --install-extension /tmp/chat-language-model-loader.vsix \
     && rm -f /tmp/chat-language-model-loader.vsix
 
