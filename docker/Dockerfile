@@ -4,6 +4,7 @@ USER root
 
 ARG NODE_VERSION=24
 ENV FNM_DIR=/opt/fnm/node
+ENV PATH=/opt/fnm:$PATH
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -17,11 +18,10 @@ RUN apt-get update \
 
 RUN mkdir -p "$FNM_DIR" \
     && curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir /opt/fnm \
-    && ln -s /opt/fnm/fnm /usr/local/bin/fnm \
+    && ln -sf /opt/fnm/fnm /usr/local/bin/fnm \
     && fnm install ${NODE_VERSION} \
     && fnm default ${NODE_VERSION} \
-    && eval "$(fnm env --shell bash)" \
-    && NODE_BIN_DIR="$(dirname "$(readlink -f "$(command -v node)")")" \
+    && NODE_BIN_DIR="$(dirname "$(fnm exec --using ${NODE_VERSION} command -v node)")" \
     && ln -sf "$NODE_BIN_DIR/node" /usr/local/bin/node \
     && ln -sf "$NODE_BIN_DIR/npm" /usr/local/bin/npm \
     && ln -sf "$NODE_BIN_DIR/npx" /usr/local/bin/npx \
@@ -39,8 +39,9 @@ FROM codercom/code-server:latest
 
 USER root
 
+ARG NODE_VERSION=24
 ENV FNM_DIR=/opt/fnm/node
-ENV PATH=/home/coder/.local/share/npm-global/bin:$PATH
+ENV PATH=/opt/fnm:/home/coder/.local/share/npm-global/bin:$PATH
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -57,8 +58,7 @@ RUN apt-get update \
 
 COPY --from=github-authentication-builder /opt/fnm /opt/fnm
 RUN ln -sf /opt/fnm/fnm /usr/local/bin/fnm \
-    && eval "$(fnm env --shell bash)" \
-    && NODE_BIN_DIR="$(dirname "$(readlink -f "$(command -v node)")")" \
+    && NODE_BIN_DIR="$(dirname "$(fnm exec --using ${NODE_VERSION} command -v node)")" \
     && ln -sf "$NODE_BIN_DIR/node" /usr/local/bin/node \
     && ln -sf "$NODE_BIN_DIR/npm" /usr/local/bin/npm \
     && ln -sf "$NODE_BIN_DIR/npx" /usr/local/bin/npx \
