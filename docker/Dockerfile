@@ -2,7 +2,7 @@ FROM codercom/code-server:latest
 
 USER root
 
-ARG NODE_VERSION=20
+ARG NODE_VERSION=24
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -10,6 +10,9 @@ RUN apt-get update \
       ca-certificates \
       curl \
       git \
+      python3 \
+      python3-pip \
+      python-is-python3 \
       sudo \
       unzip \
     && rm -rf /var/lib/apt/lists/*
