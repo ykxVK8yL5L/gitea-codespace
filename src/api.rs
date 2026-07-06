@@ -399,7 +399,7 @@ async fn start_workspace_container(
 
         if let Some(token) = state.config.workspace.github_token.as_deref() {
             args.push("-e".to_string());
-            args.push(format!("GITHUB_TOKEN={token}"));
+            args.push(format!("WORKSPACE_GITHUB_TOKEN={token}"));
         }
 
         add_shared_code_server_mounts(
