@@ -6,6 +6,7 @@ use axum::{Json, Router};
 use rand::Rng;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use std::fs;
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path as FsPath, PathBuf};
@@ -178,9 +179,9 @@ async fn create_workspace(
         )
         .await
         .unwrap_or(workspace);
-    let workspace_url =
+    let (workspace_url, container_ip) =
         match start_workspace_container(&state, &headers, &workspace, &session).await {
-            Ok(url) => url,
+            Ok(result) => result,
             Err(message) => {
                 let _ = state
                     .store
@@ -189,6 +190,12 @@ async fn create_workspace(
                 return error(StatusCode::INTERNAL_SERVER_ERROR, &message);
             }
         };
+
+    let workspace = state
+        .store
+        .set_container_ip(&workspace.workspace_id, container_ip)
+        .await
+        .unwrap_or(workspace);
 
     let workspace = state
         .store
@@ -329,7 +336,7 @@ async fn start_workspace_container(
     headers: &HeaderMap,
     workspace: &Workspace,
     session: &UserSession,
-) -> Result<String, String> {
+) -> Result<(String, Option<String>), String> {
     let manager_url = infer_manager_base_url(
         headers,
         state
@@ -370,6 +377,8 @@ async fn start_workspace_container(
             "-d".to_string(),
             "--name".to_string(),
             workspace.container_name.clone(),
+            "--user".to_string(),
+            "root".to_string(),
             "-p".to_string(),
             format!("0.0.0.0:{port}:8080"),
             "-e".to_string(),
@@ -421,13 +430,50 @@ async fn start_workspace_container(
             .map_err(|error| format!("failed to run docker: {error}"))?;
 
         if output.status.success() {
-            return workspace_public_url(&manager_url, port);
+            let url = workspace_public_url(&manager_url, port)?;
+            let container_ip = inspect_container_ip(&workspace.container_name).await;
+            return Ok((url, container_ip));
         }
 
         last_error = Some(String::from_utf8_lossy(&output.stderr).trim().to_string());
     }
 
     Err(last_error.unwrap_or_else(|| "failed to allocate workspace port".to_string()))
+}
+
+async fn inspect_container_ip(container_name: &str) -> Option<String> {
+    let output = Command::new("docker")
+        .args(["inspect", container_name])
+        .output()
+        .await
+        .ok()?;
+
+    if !output.status.success() {
+        return None;
+    }
+
+    let containers = serde_json::from_slice::<Vec<Value>>(&output.stdout).ok()?;
+    let container = containers.first()?;
+
+    container
+        .pointer("/NetworkSettings/Networks")
+        .and_then(Value::as_object)
+        .and_then(|networks| {
+            networks.values().find_map(|network| {
+                network
+                    .get("IPAddress")
+                    .and_then(Value::as_str)
+                    .filter(|ip| !ip.is_empty())
+                    .map(str::to_string)
+            })
+        })
+        .or_else(|| {
+            container
+                .pointer("/NetworkSettings/IPAddress")
+                .and_then(Value::as_str)
+                .filter(|ip| !ip.is_empty())
+                .map(str::to_string)
+        })
 }
 
 fn shared_code_server_data_dir(
