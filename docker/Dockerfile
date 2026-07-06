@@ -29,7 +29,7 @@ ENV PATH=/opt/fnm:/usr/local/cargo/bin:/usr/local/go/bin:/home/coder/.local/shar
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
       bash \
-            build-essential \
+    build-essential \
       ca-certificates \
       curl \
       git \
@@ -45,6 +45,10 @@ RUN set -eux; \
         sh /tmp/rustup-init.sh -y --no-modify-path --profile minimal --default-toolchain ${RUST_VERSION}; \
         rm -f /tmp/rustup-init.sh; \
         chmod -R a+rX ${RUSTUP_HOME} ${CARGO_HOME}; \
+    ln -sf ${CARGO_HOME}/bin/cargo /usr/local/bin/cargo; \
+    ln -sf ${CARGO_HOME}/bin/rustc /usr/local/bin/rustc; \
+    ln -sf ${CARGO_HOME}/bin/rustdoc /usr/local/bin/rustdoc; \
+    ln -sf ${CARGO_HOME}/bin/rustup /usr/local/bin/rustup; \
         rustup --version; \
         rustc --version; \
         cargo --version
@@ -61,6 +65,8 @@ RUN set -eux; \
         rm -rf /usr/local/go; \
         tar -C /usr/local -xzf /tmp/go.tar.gz; \
         rm -f /tmp/go.tar.gz; \
+        ln -sf /usr/local/go/bin/go /usr/local/bin/go; \
+        ln -sf /usr/local/go/bin/gofmt /usr/local/bin/gofmt; \
         go version
 
 RUN mkdir -p "$FNM_DIR" \
@@ -72,7 +78,7 @@ RUN mkdir -p "$FNM_DIR" \
     && ln -sf "$NODE_BIN_DIR/node" /usr/local/bin/node \
     && ln -sf "$NODE_BIN_DIR/npm" /usr/local/bin/npm \
     && ln -sf "$NODE_BIN_DIR/npx" /usr/local/bin/npx \
-    && printf 'export FNM_DIR=/opt/fnm/node\nexport PATH=/opt/fnm:$PATH\ncase "$-" in *i*) eval "$(fnm env --shell bash)" ;; esac\n' > /etc/profile.d/fnm.sh \
+    && printf 'export FNM_DIR=/opt/fnm/node\nexport RUSTUP_HOME=/usr/local/rustup\nexport CARGO_HOME=/usr/local/cargo\nexport PATH=/opt/fnm:/usr/local/cargo/bin:/usr/local/go/bin:/home/coder/.local/share/npm-global/bin:$PATH\ncase "$-" in *i*) eval "$(fnm env --shell bash)" ;; esac\n' > /etc/profile.d/fnm.sh \
     && chmod -R a+rX /opt/fnm
 
 RUN usermod -aG sudo coder \
