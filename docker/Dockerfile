@@ -110,10 +110,10 @@ RUN chmod +x /usr/local/bin/workspace-entrypoint /usr/local/bin/git-credential-w
     && chown -R coder:coder /home/coder/project
 
 USER coder
-RUN code-server --install-extension vscode-icons-team.vscode-icons \
-    && code-server --install-extension ms-python.python \
-    && code-server --install-extension ms-python.black-formatter \
-    && code-server --install-extension /tmp/chat-language-model-loader.vsix \
+RUN ode-server --extensions-dir /usr/lib/code-server/lib/vscode/extensions/ --install-extension --install-extension vscode-icons-team.vscode-icons \
+    && code-server --extensions-dir /usr/lib/code-server/lib/vscode/extensions/ --install-extension ms-python.python \
+    && code-server --extensions-dir /usr/lib/code-server/lib/vscode/extensions/ --install-extension ms-python.black-formatter \
+    && code-server --extensions-dir /usr/lib/code-server/lib/vscode/extensions/ --install-extension /tmp/chat-language-model-loader.vsix \
     && rm -f /tmp/chat-language-model-loader.vsix
 
 WORKDIR /home/coder/project
