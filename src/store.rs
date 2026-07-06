@@ -28,6 +28,8 @@ struct PersistedWorkspace {
     clone_url: Option<String>,
     status: WorkspaceStatus,
     url: Option<String>,
+    #[serde(default)]
+    container_ip: Option<String>,
     container_name: String,
     code_server_password: Option<String>,
     volume_name: String,
@@ -49,6 +51,7 @@ impl From<Workspace> for PersistedWorkspace {
             clone_url: workspace.clone_url,
             status: workspace.status,
             url: workspace.url,
+            container_ip: workspace.container_ip,
             container_name: workspace.container_name,
             code_server_password: workspace.code_server_password,
             volume_name: workspace.volume_name,
@@ -72,6 +75,7 @@ impl From<PersistedWorkspace> for Workspace {
             clone_url: workspace.clone_url,
             status: workspace.status,
             url: workspace.url,
+            container_ip: workspace.container_ip,
             container_name: workspace.container_name,
             code_server_password: workspace.code_server_password,
             volume_name: workspace.volume_name,
@@ -142,6 +146,21 @@ impl WorkspaceStore {
             let mut guard = self.inner.write().await;
             let workspace = guard.get_mut(workspace_id)?;
             workspace.mark(status, url);
+            workspace.clone()
+        };
+        let _ = self.persist().await;
+        Some(workspace)
+    }
+
+    pub async fn set_container_ip(
+        &self,
+        workspace_id: &str,
+        container_ip: Option<String>,
+    ) -> Option<Workspace> {
+        let workspace = {
+            let mut guard = self.inner.write().await;
+            let workspace = guard.get_mut(workspace_id)?;
+            workspace.set_container_ip(container_ip);
             workspace.clone()
         };
         let _ = self.persist().await;
