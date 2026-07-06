@@ -30,6 +30,7 @@ pub struct Workspace {
     pub clone_url: Option<String>,
     pub status: WorkspaceStatus,
     pub url: Option<String>,
+    pub container_ip: Option<String>,
     pub container_name: String,
     pub code_server_password: Option<String>,
     #[serde(skip)]
@@ -85,6 +86,7 @@ impl Workspace {
             clone_url: req.clone_url,
             status: WorkspaceStatus::Creating,
             url: None,
+            container_ip: None,
             container_name,
             code_server_password: Some(Alphanumeric.sample_string(&mut rand::thread_rng(), 18)),
             volume_name,
@@ -98,6 +100,11 @@ impl Workspace {
         if url.is_some() {
             self.url = url;
         }
+        self.updated_at = Utc::now();
+    }
+
+    pub fn set_container_ip(&mut self, container_ip: Option<String>) {
+        self.container_ip = container_ip;
         self.updated_at = Utc::now();
     }
 
