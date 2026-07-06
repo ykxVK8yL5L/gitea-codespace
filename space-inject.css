@@ -68,6 +68,51 @@
 .gcs-space-item-actions {
   display: flex;
   gap: 6px;
+  align-items: center;
+}
+
+.gcs-action-menu {
+  position: relative;
+  display: inline-block;
+}
+
+.gcs-action-menu-list {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 1000;
+  display: none;
+  min-width: 148px;
+  padding: 4px 0;
+  border: 1px solid var(--color-secondary);
+  border-radius: 6px;
+  background: var(--color-body);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.gcs-action-menu:hover .gcs-action-menu-list,
+.gcs-action-menu:focus-within .gcs-action-menu-list {
+  display: block;
+}
+
+.gcs-action-menu-list a,
+.gcs-action-menu-list button {
+  display: block;
+  width: 100%;
+  padding: 7px 10px;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.gcs-action-menu-list a:hover,
+.gcs-action-menu-list button:hover {
+  background: var(--color-hover);
+  text-decoration: none;
 }
 
 .gcs-empty {
