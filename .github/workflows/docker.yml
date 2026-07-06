@@ -2,6 +2,15 @@ name: Build and Push Space Docker Image
 
 on:
   workflow_dispatch:
+    inputs:
+      build_mode:
+        description: Build mode
+        required: true
+        default: full
+        type: choice
+        options:
+          - full
+          - mini
 
 jobs:
   build:
@@ -33,12 +42,13 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./docker
+          file: ./docker/Dockerfile${{ inputs.build_mode == 'mini' && '-mini' || '' }}
           push: true
           tags: |
-            ghcr.io/${{ steps.lower-repo.outputs.repository }}/gitea-code-server:4.127.0-trixie
+            ghcr.io/${{ steps.lower-repo.outputs.repository }}/gitea-code-server:4.127.0-trixie${{ inputs.build_mode == 'mini' && '-mini' || '' }}
           labels: |
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
             org.opencontainers.image.description=Gitea-Code-Server Docker Image
             org.opencontainers.image.licenses=MIT
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=${{ inputs.build_mode }}
+          cache-to: type=gha,mode=max,scope=${{ inputs.build_mode }}
