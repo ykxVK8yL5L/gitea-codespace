@@ -41,8 +41,8 @@ RUN chmod +x /usr/local/bin/workspace-entrypoint /usr/local/bin/git-credential-w
   && cp -a /usr/lib/code-server/lib/vscode/extensions/github-authentication /opt/github-authentication/official
 
 USER coder
-RUN code-server --install-extension vscode-icons-team.vscode-icons \
-    && code-server --install-extension /tmp/chat-language-model-loader.vsix \
+RUN code-server --extensions-dir /usr/lib/code-server/lib/vscode/extensions/ --install-extension vscode-icons-team.vscode-icons \
+    && code-server --extensions-dir /usr/lib/code-server/lib/vscode/extensions/ --install-extension /tmp/chat-language-model-loader.vsix \
     && rm -f /tmp/chat-language-model-loader.vsix
 WORKDIR /home/coder/project
 
