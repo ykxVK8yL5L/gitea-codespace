@@ -33,6 +33,7 @@ RUN usermod -aG sudo coder \
 
 COPY entrypoint.sh /usr/local/bin/workspace-entrypoint
 COPY git-credential-workspace-manager /usr/local/bin/git-credential-workspace-manager
+COPY --chown=coder:coder chat-language-model-loader.vsix /tmp/chat-language-model-loader.vsix
 COPY --from=github-authentication-builder /tmp/github-authentication/dist/github-authentication-env-token /opt/github-authentication/env-token
 RUN chmod +x /usr/local/bin/workspace-entrypoint /usr/local/bin/git-credential-workspace-manager \
   && mkdir -p /opt/github-authentication \
