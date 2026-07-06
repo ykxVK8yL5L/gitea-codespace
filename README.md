@@ -2,6 +2,33 @@
 
 Gitea Code Spaces workspace manager. The manager runs as a local binary and creates code-server Docker containers for workspaces.
 
+## Build Manager Binary
+
+Build the workspace manager application:
+
+```bash
+cargo build --release
+```
+
+The compiled binary is generated at:
+
+```text
+target/release/workspace-manager
+```
+
+Optional Linux musl amd64 build:
+
+```bash
+rustup target add x86_64-unknown-linux-musl
+cargo build --release --target x86_64-unknown-linux-musl
+```
+
+The musl binary is generated at:
+
+```text
+target/x86_64-unknown-linux-musl/release/workspace-manager
+```
+
 ## Build Workspace Image
 
 Build the custom code-server image first:
