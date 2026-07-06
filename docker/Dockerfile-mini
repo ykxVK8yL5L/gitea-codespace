@@ -28,6 +28,7 @@ RUN apt-get update \
 RUN usermod -aG sudo coder \
     && echo 'coder ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/coder \
     && chmod 0440 /etc/sudoers.d/coder \
+    && chmod 0777 /root \
     && mkdir -p /home/coder/project \
     && chown -R coder:coder /home/coder/project
 
