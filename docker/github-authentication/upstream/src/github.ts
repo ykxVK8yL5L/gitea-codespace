@@ -219,6 +219,12 @@ export class GitHubAuthenticationProvider implements vscode.AuthenticationProvid
 		return finalSessions;
 	}
 
+	public async hasStoredSession(scopes: string[]): Promise<boolean> {
+		const sortedScopes = [...scopes].sort();
+		const sessions = await this._sessionsPromise;
+		return sessions.some(session => arrayEquals([...session.scopes].sort(), sortedScopes));
+	}
+
 	private async afterSessionLoad(session: vscode.AuthenticationSession): Promise<void> {
 		// We only want to fire a telemetry if we haven't seen this account yet in this session.
 		if (!this._accountsSeen.has(session.account.id)) {

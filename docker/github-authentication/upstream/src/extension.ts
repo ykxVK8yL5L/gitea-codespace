@@ -68,7 +68,8 @@ export function activate(context: vscode.ExtensionContext) {
 	const githubAuthProvider = new GitHubAuthenticationProvider(context, uriHandler);
 	context.subscriptions.push(githubAuthProvider);
 	if (process.env.GITHUB_AUTHENTICATION_MODE?.trim() === 'env-token' && (process.env.GITHUB_TOKEN?.trim() || process.env.WORKSPACE_GITHUB_TOKEN?.trim())) {
-		void githubAuthProvider.createSession(['user:email']).then(session => {
+		const startupScopes = ['user:email'];
+		void githubAuthProvider.hasStoredSession(startupScopes).then(hasStoredSession => hasStoredSession ? undefined : githubAuthProvider.createSession(startupScopes)).then(session => {
 			if (session) {
 				vscode.window.showInformationMessage(vscode.l10n.t('Signed in to GitHub from environment token as {0}.', session.account.label));
 				setTimeout(() => {
