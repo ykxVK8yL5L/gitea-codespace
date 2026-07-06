@@ -97,6 +97,30 @@
       .replaceAll("'", "&#39;");
   }
 
+  function containerUrl(space) {
+    return space.container_ip ? `http://${space.container_ip}:8080/` : "";
+  }
+
+  function renderActionMenu(space) {
+    const mappedUrl = space.url ? escapeHtml(space.url) : "";
+    const directUrl = containerUrl(space);
+    const escapedDirectUrl = directUrl ? escapeHtml(directUrl) : "";
+    const workspaceId = escapeHtml(space.workspace_id);
+
+    return `
+      <div class="gcs-action-menu">
+        <button class="ui small primary button gcs-action-menu-button" type="button">
+          Actions ▾
+        </button>
+        <div class="gcs-action-menu-list">
+          ${mappedUrl ? `<a href="${mappedUrl}" target="_blank" rel="noopener">Port mapping</a>` : ""}
+          ${escapedDirectUrl ? `<a href="${escapedDirectUrl}" target="_blank" rel="noopener">Container IP</a>` : ""}
+          <button class="js-gcs-delete" type="button" data-workspace-id="${workspaceId}">Delete</button>
+        </div>
+      </div>
+    `;
+  }
+
   function renderSpacesPanel(panel, state, data) {
     const spacePanel = panel.querySelector('[data-gcs-panel="spaces"]');
     if (!spacePanel) return;
@@ -112,7 +136,7 @@
             const password = space.code_server_password ? escapeHtml(space.code_server_password) : "";
             const workspaceId = escapeHtml(space.workspace_id);
             const status = escapeHtml(space.status);
-            const url = space.url ? escapeHtml(space.url) : "";
+            const containerIp = space.container_ip ? escapeHtml(space.container_ip) : "";
             return `
               <div class="gcs-space-item">
                 <div class="gcs-space-item-main">
@@ -120,18 +144,12 @@
                   <div class="gcs-space-meta">
                     ${status}
                   </div>
+                  ${containerIp ? `<div class="gcs-space-meta">Container IP: <code>${containerIp}</code></div>` : ""}
                   ${password ? `<div class="gcs-space-meta">Password: <code>${password}</code> <button class="ui mini button js-gcs-copy-password" type="button" data-password="${password}">Copy</button></div>` : ""}
                 </div>
 
                 <div class="gcs-space-item-actions">
-                  ${
-                    space.url
-                      ? `<a class="ui small primary button" href="${url}" target="_blank" rel="noopener">Open</a>`
-                      : ""
-                  }
-                  <button class="ui small button js-gcs-delete" data-workspace-id="${workspaceId}">
-                    Delete
-                  </button>
+                  ${renderActionMenu(space)}
                 </div>
               </div>
             `;
