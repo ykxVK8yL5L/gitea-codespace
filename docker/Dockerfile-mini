@@ -1,0 +1,44 @@
+FROM node:24-bookworm-slim AS github-authentication-builder
+
+USER root
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+      bash \
+      ca-certificates \
+      git \
+      python3 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY github-authentication /tmp/github-authentication
+RUN bash /tmp/github-authentication/build.sh
+
+FROM codercom/code-server:4.127.0-trixie
+
+USER root
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+      ca-certificates \
+      curl \
+      git \
+      sudo \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN usermod -aG sudo coder \
+    && echo 'coder ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/coder \
+    && chmod 0440 /etc/sudoers.d/coder \
+    && mkdir -p /home/coder/project \
+    && chown -R coder:coder /home/coder/project
+
+COPY entrypoint.sh /usr/local/bin/workspace-entrypoint
+COPY git-credential-workspace-manager /usr/local/bin/git-credential-workspace-manager
+COPY --from=github-authentication-builder /tmp/github-authentication/dist/github-authentication-env-token /opt/github-authentication/env-token
+RUN chmod +x /usr/local/bin/workspace-entrypoint /usr/local/bin/git-credential-workspace-manager \
+  && mkdir -p /opt/github-authentication \
+  && cp -a /usr/lib/code-server/lib/vscode/extensions/github-authentication /opt/github-authentication/official
+
+USER coder
+WORKDIR /home/coder/project
+
+ENTRYPOINT ["/usr/local/bin/workspace-entrypoint"]
