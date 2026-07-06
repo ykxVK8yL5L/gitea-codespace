@@ -19,12 +19,17 @@ FROM codercom/code-server:4.127.0-trixie
 USER root
 
 ARG NODE_VERSION=24
+ARG RUST_VERSION=stable
+ARG GO_VERSION=1.24.4
 ENV FNM_DIR=/opt/fnm/node
-ENV PATH=/opt/fnm:/home/coder/.local/share/npm-global/bin:$PATH
+ENV RUSTUP_HOME=/usr/local/rustup
+ENV CARGO_HOME=/usr/local/cargo
+ENV PATH=/opt/fnm:/usr/local/cargo/bin:/usr/local/go/bin:/home/coder/.local/share/npm-global/bin:$PATH
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
       bash \
+            build-essential \
       ca-certificates \
       curl \
       git \
@@ -34,6 +39,29 @@ RUN apt-get update \
       sudo \
       unzip \
     && rm -rf /var/lib/apt/lists/*
+
+RUN set -eux; \
+        curl -fsSL https://sh.rustup.rs -o /tmp/rustup-init.sh; \
+        sh /tmp/rustup-init.sh -y --no-modify-path --profile minimal --default-toolchain ${RUST_VERSION}; \
+        rm -f /tmp/rustup-init.sh; \
+        chmod -R a+rX ${RUSTUP_HOME} ${CARGO_HOME}; \
+        rustup --version; \
+        rustc --version; \
+        cargo --version
+
+RUN set -eux; \
+        arch="$(dpkg --print-architecture)"; \
+        case "$arch" in \
+            amd64) go_arch='amd64' ;; \
+            arm64) go_arch='arm64' ;; \
+            armhf) go_arch='armv6l' ;; \
+            *) echo "Unsupported Go architecture: $arch" >&2; exit 1 ;; \
+        esac; \
+        curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-${go_arch}.tar.gz" -o /tmp/go.tar.gz; \
+        rm -rf /usr/local/go; \
+        tar -C /usr/local -xzf /tmp/go.tar.gz; \
+        rm -f /tmp/go.tar.gz; \
+        go version
 
 RUN mkdir -p "$FNM_DIR" \
     && curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir /opt/fnm \
