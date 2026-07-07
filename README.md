@@ -34,7 +34,7 @@ target/x86_64-unknown-linux-musl/release/workspace-manager
 Build the custom code-server image first:
 
 ```bash
-cd /Users/coder/Desktop/workspace-manager/docker
+cd docker
 docker build -t gitea-code-server:latest .
 ```
 
